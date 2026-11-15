@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistem Transaksi ATM Mahasiswa - Bank UNTAD</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f9;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    /* Navbar Atas */
+    .navbar {
+      background-color: #0b4f8a;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #f0b429;
+    }
+
+    .navbar h1 {
+      font-size: 1.2rem;
+    }
+
+    .navbar span {
+      font-size: 0.85rem;
+      background-color: rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Kontainer Utama */
+    .container {
+      max-width: 960px;
+      margin: 28px auto;
+      padding: 0 16px;
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Kartu Konten (Card) */
+    .card {
+      background-color: #ffffff;
+      border: 1px solid #dce1e7;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: #0b4f8a;
+      border-bottom: 1px solid #e5e9ef;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      color: #222;
+      margin-bottom: 10px;
+    }
+
+    /* Form & Input */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      border: 1px solid #bfc7d1;
+      border-radius: 5px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #0b4f8a;
+    }
+
+    /* Tombol */
+    .btn {
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: #0b4f8a;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: #083b68;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      color: #ffffff;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+
+    .btn-outline {
+      background-color: #ffffff;
+      color: #0b4f8a;
+      border: 1px solid #0b4f8a;
+    }
+
+    .btn-outline:hover {
+      background-color: #eef5fc;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+    }
+
+    /* Pilihan Nominal Rekomendasi */
+    .nominal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .nominal-btn {
+      background-color: #f0f6fc;
+      border: 2px solid #0b4f8a;
+      color: #0b4f8a;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .nominal-btn:hover {
+      background-color: #0b4f8a;
+      color: #ffffff;
+    }
+
+    /* Alert / Kotak Informasi */
+    .alert {
+      padding: 12px 14px;
+      border-radius: 5px;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
+
+    .alert-info {
+      background-color: #e7f3fe;
+      border-left: 4px solid #0b4f8a;
+      color: #084298;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      border-left: 4px solid #f0b429;
+      color: #664d03;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      border-left: 4px solid #dc3545;
+      color: #842029;
+    }
+
+    .alert-success {
+      background-color: #d1e7dd;
+      border-left: 4px solid #198754;
+      color: #0f5132;
+    }
+
+    /* Kotak Saldo */
+    .saldo-box {
+      background-color: #f8fafc;
+      border: 1px solid #dce1e7;
+      padding: 14px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .saldo-box .amount {
+      font-size: 1.35rem;
+      font-weight: bold;
+      color: #0b4f8a;
+    }
+
+    /* Tabel Data */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    table th, table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e9ef;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #f8fafc;
+      color: #444;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .preset-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Website -->
+  <div class="navbar">
+    <h1>Sistem ATM Ramah Mahasiswa (Nominal Kecil)</h1>
+    <span>RPL - Teknik Informatika UNTAD</span>
+  </div>
+
+  <div class="container">
+
+    <!-- HALAMAN 1: LOGIN PIN -->
+    <div id="halamanLogin" class="card" style="max-width: 440px; margin: 40px auto;">
+      <h2>Masuk ke Layanan Transaksi</h2>
+      <div class="alert alert-info">
+        Silakan masukkan PIN akun mahasiswa Anda untuk memulai simulasi penarikan tunai. (PIN Default: <strong>123456</strong>)
+      </div>
+
+      <div id="loginError" class="alert alert-danger hidden"></div>
+
+      <form onsubmit="prosesLogin(event)">
+        <div class="form-group">
+          <label for="inputPin">Masukkan 6 Digit PIN</label>
+          <input type="password" id="inputPin" class="form-control" maxlength="6" placeholder="Contoh: 123456" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Masuk</button>
+      </form>
+    </div>
+
+    <!-- HALAMAN 2: DASHBOARD UTAMA (SETELAH LOGIN) -->
+    <div id="halamanDashboard" class="hidden">
+      <div class="grid-layout">
+
+        <!-- Kolom Kiri: Form Transaksi Penarikan -->
+        <div>
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e9ef; padding-bottom: 10px; margin-bottom: 16px;">
+              <h2 style="border: none; padding: 0; margin: 0;">Penarikan Tunai</h2>
+              <button class="btn btn-danger btn-sm" onclick="logout()">Keluar</button>
+            </div>
+
+            <!-- Pilih Rekening -->
+            <div class="form-group">
+              <label for="pilihRekening">Pilih Sumber Tabungan</label>
+              <select id="pilihRekening" class="form-control" onchange="gantiRekening()">
+                <option value="utama">Tabungan Mahasiswa (Utama)</option>
+                <option value="cadangan">Tabungan Reguler (Cadangan)</option>
+              </select>
+            </div>
+
+            <!-- Info Saldo Aktif -->
+            <div class="saldo-box">
+              <div>
+                <div style="font-size: 0.82rem; color: #666;">Saldo Tersedia Saat Ini</div>
+                <div class="amount" id="tampilanSaldo">Rp25.000</div>
+              </div>
+              <div style="text-align: right; font-size: 0.82rem; color: #555;">
+                <strong id="namaUser">Retno Mambuhu</strong><br />
+                NIM: F5512520038
+              </div>
+            </div>
+
+            <!-- Pesan Rekomendasi Sistem -->
+            <div id="kotakInfoSistem" class="alert alert-info"></div>
+
+            <!-- Tombol Pilihan Pecahan Cepat -->
+            <div class="form-group">
+              <label>Rekomendasi Nominal Penarikan:</label>
+              <div id="daftarOpsiNominal" class="nominal-grid"></div>
+            </div>
+
+            <!-- Input Jumlah Lain -->
+            <div class="form-group" style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed #dce1e7;">
+              <label for="inputNominalLain">Atau Masukkan Jumlah Lain (Kelipatan Rp10.000)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="inputNominalLain" class="form-control" step="10000" min="10000" placeholder="Contoh: 20000" />
+                <button type="button" class="btn btn-primary" onclick="tarikJumlahLain()">Tarik</button>
+              </div>
+            </div>
+
+            <!-- Kotak Saran Alternatif Jika Saldo Kurang -->
+            <div id="kotakSaranAlternatif" class="alert alert-warning hidden"></div>
+
+            <!-- Pesan Error / Sukses Transaksi -->
+            <div id="pesanTransaksi" class="hidden"></div>
+          </div>
+
+          <!-- Tabel Riwayat Transaksi -->
+          <div class="card">
+            <h2>Riwayat Transaksi</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Tabungan</th>
+                  <th>Nominal</th>
+                  <th>Rincian Pecahan</th>
+                </tr>
+              </thead>
+              <tbody id="tabelRiwayat">
+                <tr>
+                  <td colspan="4" style="text-align: center; color: #777;">Belum ada transaksi.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan: Panel Uji Skenario & Stok Uang -->
+        <div>
+          <div class="card">
+            <h2>Simulasi Kondisi Saldo</h2>
+            <p style="font-size: 0.84rem; color: #555; margin-bottom: 10px;">
+              Gunakan tombol di bawah untuk menguji perubahan rekomendasi pecahan secara langsung saat presentasi:
+            </p>
+            <div class="preset-bar">
+              <button class="btn btn-outline btn-sm" onclick="ubahSaldoSimulasi(150000)">Saldo Rp150.000</button>
+              <button class="btn btn-outline btn-sm" onclick="ubahSaldoSimulasi(50000)">Saldo Rp50.000</button>
+              <button class="btn btn-outline btn-sm" onclick="ubahSaldoSimulasi(25000)">Saldo Rp25.000</button>
+              <button class="btn btn-outline btn-sm" onclick="ubahSaldoSimulasi(15000)">Saldo Rp15.000</button>
+              <button class="btn btn-outline btn-sm" onclick="ubahSaldoSimulasi(5000)">Saldo Rp5.000</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Stok Pecahan Uang Tersedia</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Pecahan</th>
+                  <th>Stok Lembar</th>
+                </tr>
+              </thead>
+              <tbody id="tabelStok">
+                <!-- Diisi melalui JavaScript -->
+              </tbody>
+            </table>
+            <button class="btn btn-outline btn-sm" style="width: 100%; margin-top: 12px;" onclick="resetStok()">
+              Isi Ulang Stok Pecahan
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Data pengguna simulasi
+    const akunMahasiswa = {
+      nama: "Retno Resya Dharma Putri M.",
+      pin: "123456",
+      tabungan: {
+        utama: { nama: "Tabungan Mahasiswa", saldo: 25000 },
+        cadangan: { nama: "Tabungan Reguler", saldo: 120000 }
+      }
+    };
+
+    // Stok lembar uang pada sistem
+    let stokPecahan = {
+      100000: 10,
+      50000: 15,
+      20000: 20,
+      10000: 25
+    };
+
+    let daftarRiwayat = [];
+
+    function formatRupiah(angka) {
+      return "Rp" + angka.toLocaleString("id-ID");
+    }
+
+    // 1. Fungsi Login PIN
+    function prosesLogin(event) {
+      event.preventDefault();
+      const pinInput = document.getElementById("inputPin").value;
+      const loginError = document.getElementById("loginError");
+
+      if (pinInput === akunMahasiswa.pin) {
+        loginError.classList.add("hidden");
+        document.getElementById("halamanLogin").classList.add("hidden");
+        document.getElementById("halamanDashboard").classList.remove("hidden");
+        document.getElementById("inputPin").value = "";
+        perbaruiTampilan();
+      } else {
+        loginError.textContent = "PIN yang Anda masukkan salah. Gunakan 123456.";
+        loginError.classList.remove("hidden");
+      }
+    }
+
+    function logout() {
+      document.getElementById("halamanDashboard").classList.add("hidden");
+      document.getElementById("halamanLogin").classList.remove("hidden");
+      sembunyikanPesan();
+    }
+
+    // 2. Algoritma Penentuan Rekomendasi Nominal Berdasarkan Saldo
+    function getOpsiRekomendasi(saldo) {
+      let opsi = [];
+      if (saldo >= 50000) {
+        if (saldo >= 100000 && stokPecahan[100000] > 0) opsi.push(100000);
+        if (saldo >= 50000 && stokPecahan[50000] > 0) opsi.push(50000);
+      } else {
+        // Jika saldo < Rp50.000, sistem menampilkan pecahan kecil Rp20.000 dan Rp10.000
+        if (saldo >= 20000 && stokPecahan[20000] > 0) opsi.push(20000);
+        if (saldo >= 10000 && stokPecahan[10000] > 0) opsi.push(10000);
+      }
+      return opsi;
+    }
+
+    // 3. Menghitung Komposisi Lembar Uang
+    function hitungKomposisiUang(nominal) {
+      let sisa = nominal;
+      let komposisi = {};
+      const urutanPecahan = [100000, 50000, 20000, 10000];
+
+      for (let p of urutanPecahan) {
+        let lembarDibutuhkan = Math.floor(sisa / p);
+        let lembarDiambil = Math.min(lembarDibutuhkan, stokPecahan[p]);
+        if (lembarDiambil > 0) {
+          komposisi[p] = lembarDiambil;
+          sisa -= lembarDiambil * p;
+        }
+      }
+
+      if (sisa > 0) return null;
+      return komposisi;
+    }
+
+    // 4. Eksekusi Penarikan Tunai
+    function eksekusiPenarikan(nominal) {
+      sembunyikanPesan();
+      const jenisTabungan = document.getElementById("pilihRekening").value;
+      const dataTabungan = akunMahasiswa.tabungan[jenisTabungan];
+
+      if (isNaN(nominal) || nominal < 10000 || nominal % 10000 !== 0) {
+        tampilkanPesan("Nominal penarikan minimal Rp10.000 dan harus kelipatan Rp10.000.", "danger");
+        return;
+      }
+
+      // Jika saldo kurang dari nominal yang diminta, berikan rekomendasi alternatif
+      if (nominal > dataTabungan.saldo) {
+        const maksimalTarik = Math.floor(dataTabungan.saldo / 10000) * 10000;
+        const kotakSaran = document.getElementById("kotakSaranAlternatif");
+
+        if (maksimalTarik >= 10000) {
+          kotakSaran.innerHTML = `
+            <strong>Saldo Tidak Mencukupi untuk ${formatRupiah(nominal)}!</strong><br/>
+            Saldo Anda saat ini ${formatRupiah(dataTabungan.saldo)}. Sistem merekomendasikan penarikan maksimal sebesar <strong>${formatRupiah(maksimalTarik)}</strong>.<br/>
+            <button type="button" class="btn btn-success btn-sm" style="margin-top:8px;" onclick="eksekusiPenarikan(${maksimalTarik})">
+              Tarik ${formatRupiah(maksimalTarik)} Sekarang
+            </button>
+          `;
+          kotakSaran.classList.remove("hidden");
+        } else {
+          tampilkanPesan("Saldo Anda kurang dari Rp10.000 sehingga tidak dapat melakukan penarikan tunai.", "danger");
+        }
+        return;
+      }
+
+      const komposisi = hitungKomposisiUang(nominal);
+      if (!komposisi) {
+        tampilkanPesan("Stok pecahan uang tidak mencukupi untuk nominal tersebut.", "danger");
+        return;
+      }
+
+      // Kurangi saldo dan stok lembar uang
+      dataTabungan.saldo -= nominal;
+      let rincianList = [];
+      for (let p in komposisi) {
+        stokPecahan[p] -= komposisi[p];
+        rincianList.push(`${komposisi[p]}x ${formatRupiah(Number(p))}`);
+      }
+
+      // Simpan ke riwayat transaksi
+      const waktuSekarang = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      daftarRiwayat.unshift({
+        waktu: waktuSekarang,
+        tabungan: dataTabungan.nama,
+        nominal: nominal,
+        rincian: rincianList.join(", ")
+      });
+
+      document.getElementById("inputNominalLain").value = "";
+      perbaruiTampilan();
+      tampilkanPesan(
+        `Penarikan sebesar <strong>${formatRupiah(nominal)}</strong> berhasil! Pecahan keluar: ${rincianList.join(", ")}. Sisa saldo: <strong>${formatRupiah(dataTabungan.saldo)}</strong>.`,
+        "success"
+      );
+    }
+
+    function tarikJumlahLain() {
+      const nilai = Number(document.getElementById("inputNominalLain").value);
+      eksekusiPenarikan(nilai);
+    }
+
+    function gantiRekening() {
+      sembunyikanPesan();
+      perbaruiTampilan();
+    }
+
+    function ubahSaldoSimulasi(saldoBaru) {
+      const jenisTabungan = document.getElementById("pilihRekening").value;
+      akunMahasiswa.tabungan[jenisTabungan].saldo = saldoBaru;
+      sembunyikanPesan();
+      perbaruiTampilan();
+    }
+
+    function resetStok() {
+      stokPecahan = { 100000: 10, 50000: 15, 20000: 20, 10000: 25 };
+      perbaruiTampilan();
+      tampilkanPesan("Stok pecahan uang berhasil diisi ulang.", "info");
+    }
+
+    function tampilkanPesan(teks, tipe) {
+      const el = document.getElementById("pesanTransaksi");
+      el.className = `alert alert-${tipe}`;
+      el.innerHTML = teks;
+      el.classList.remove("hidden");
+    }
+
+    function sembunyikanPesan() {
+      document.getElementById("pesanTransaksi").classList.add("hidden");
+      document.getElementById("kotakSaranAlternatif").classList.add("hidden");
+    }
+
+    // 5. Render Ulang Seluruh Data di Halaman
+    function perbaruiTampilan() {
+      const jenisTabungan = document.getElementById("pilihRekening").value;
+      const saldoAktif = akunMahasiswa.tabungan[jenisTabungan].saldo;
+
+      document.getElementById("tampilanSaldo").textContent = formatRupiah(saldoAktif);
+
+      // Update info & tombol rekomendasi nominal
+      const opsi = getOpsiRekomendasi(saldoAktif);
+      const infoEl = document.getElementById("kotakInfoSistem");
+      const gridEl = document.getElementById("daftarOpsiNominal");
+
+      if (saldoAktif >= 50000) {
+        infoEl.className = "alert alert-info";
+        infoEl.innerHTML = "Saldo Anda <strong>&ge; Rp50.000</strong>. Sistem menampilkan pilihan pecahan standar (Rp100.000 / Rp50.000).";
+      } else if (saldoAktif >= 10000) {
+        infoEl.className = "alert alert-warning";
+        infoEl.innerHTML = "Saldo Anda <strong>&lt; Rp50.000</strong>. Sistem mengaktifkan mode ramah mahasiswa dengan rekomendasi pecahan kecil (Rp20.000 / Rp10.000).";
+      } else {
+        infoEl.className = "alert alert-danger";
+        infoEl.innerHTML = "Saldo Anda di bawah <strong>Rp10.000</strong>. Tidak ada pilihan penarikan yang tersedia.";
+      }
+
+      if (opsi.length > 0) {
+        gridEl.innerHTML = opsi.map(nom => `
+          <button type="button" class="nominal-btn" onclick="eksekusiPenarikan(${nom})">
+            ${formatRupiah(nom)}
+          </button>
+        `).join("");
+      } else {
+        gridEl.innerHTML = `<div style="grid-column: span 2; color: #777; font-size: 0.85rem;">Tidak ada opsi penarikan tersedia.</div>`;
+      }
+
+      // Update tabel stok uang
+      const tabelStok = document.getElementById("tabelStok");
+      tabelStok.innerHTML = [100000, 50000, 20000, 10000].map(p => `
+        <tr>
+          <td>${formatRupiah(p)}</td>
+          <td><strong>${stokPecahan[p]}</strong> lembar</td>
+        </tr>
+      `).join("");
+
+      // Update tabel riwayat transaksi
+      const tabelRiwayat = document.getElementById("tabelRiwayat");
+      if (daftarRiwayat.length === 0) {
+        tabelRiwayat.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #777;">Belum ada transaksi.</td></tr>`;
+      } else {
+        tabelRiwayat.innerHTML = daftarRiwayat.map(r => `
+          <tr>
+            <td>${r.waktu}</td>
+            <td>${r.tabungan}</td>
+            <td><strong>${formatRupiah(r.nominal)}</strong></td>
+            <td>${r.rincian}</td>
+          </tr>
+        `).join("");
+      }
+    }
+  </script>
+</body>
+</html>
+Diproses dan dianalisis dalam kode
